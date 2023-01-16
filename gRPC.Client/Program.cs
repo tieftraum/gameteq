@@ -45,7 +45,17 @@ namespace gRPC.Client
 
 			var response = await call.ResponseAsync;
 
-			Console.WriteLine(response);
+			if (response.Success)
+				File.Delete(e.FullPath);
+
+			using var es = client.GetObjectsByFileTypeStream(new GetObjectsByFileTypeRequest { FileType = "eventlog" });
+			
+			while (await es.ResponseStream.MoveNext(CancellationToken.None))
+			{
+				var  d= es.ResponseStream.Current;
+				Console.WriteLine($"{d.Type}\n---\n${d.Data}\n");
+				await Task.Delay(1000);
+			}
 		}
 	}
 }

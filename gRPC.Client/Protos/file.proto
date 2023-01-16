@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "gRPC.Server";
 
@@ -6,6 +7,8 @@ package fileWriter;
 
 service FileWriter {
 	rpc WriteFileInputInformation(stream WriteFileRequest) returns (WriteFileResponse);
+	rpc GetAllFileTypes(google.protobuf.Empty) returns (FileTypes);
+	rpc GetObjectsByFileTypeStream(GetObjectsByFileTypeRequest) returns (stream GetObjectsByFileTypeResponse);
 }
 
 message WriteFileRequest {
@@ -15,4 +18,17 @@ message WriteFileRequest {
 
 message WriteFileResponse {
 	bool success = 1;
+}
+
+message FileTypes {
+	repeated string types = 1;
+}
+
+message GetObjectsByFileTypeRequest {
+	string fileType = 1;
+}
+
+message GetObjectsByFileTypeResponse {
+	string type = 1;
+	string data = 2;
 }

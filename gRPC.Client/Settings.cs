@@ -12,7 +12,7 @@ namespace gRPC.Client
 		{
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(Directory.GetCurrentDirectory())
-				.AddJsonFile("appsettings.json", false, true)
+				.AddJsonFile("appsettings.json", false, false)
 				.Build();
 
 			return builder.GetSection(nameof(Settings)).Get<Settings>()!;
