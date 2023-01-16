@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "gRPC.Server";
+
+package fileWriter;
+
+service FileWriter {
+	rpc WriteFileInputInformation(stream WriteFileRequest) returns (WriteFileResponse);
+}
+
+message WriteFileRequest {
+	string type = 1;
+	string data = 2;
+}
+
+message WriteFileResponse {
+	bool success = 1;
+}

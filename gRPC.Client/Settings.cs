@@ -7,7 +7,7 @@ namespace gRPC.Client
 		public int BatchSize { get; set; }
 		public string FilePath { get; set; } = string.Empty;
 		public string ExtensionFilter { get; set; } = string.Empty;
-
+		public string GrpcServerAddress { get; set; } = string.Empty;
 		public static Settings Get()
 		{
 			var builder = new ConfigurationBuilder()
