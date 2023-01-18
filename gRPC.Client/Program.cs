@@ -11,6 +11,7 @@ namespace gRPC.Client
 	internal class Program
 	{
 		private static readonly Settings Settings = Settings.Get();
+
 		private static void Main()
 		{
 			var watcher = new Watcher(Settings.FilePath, Settings.ExtensionFilter);
@@ -18,33 +19,17 @@ namespace gRPC.Client
 			watcher.Start();
 			watcher.Created += Watcher_Created;
 
-			Console.WriteLine("Press 'q' to quit the sample.");
+			Console.WriteLine("Press 'q' to quit the sample.\n");
 
 			while (Console.Read() != 'q')
-			{ }
+			{}
 
 			watcher.Stop();
 		}
 
 		private static async void Watcher_Created(object sender, FileSystemEventArgs e)
 		{
-			var defaultMethodConfig = new MethodConfig
-			{
-				Names = { MethodName.Default },
-				RetryPolicy = new RetryPolicy
-				{
-					MaxAttempts = 5,
-					InitialBackoff = TimeSpan.FromSeconds(1),
-					MaxBackoff = TimeSpan.FromSeconds(5),
-					BackoffMultiplier = 1.5,
-					RetryableStatusCodes = { StatusCode.Unavailable }
-				}
-			};
-			var channel = GrpcChannel.ForAddress(Settings.GrpcServerAddress, new GrpcChannelOptions
-			{
-				ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } }
-			});
-			var client = new FileWriterClient(channel);
+			var client = InitializeClient();
 
 			await WriteFileInformationAsync(client, e.FullPath);
 			await GetAllFileTypesAsync(client);
@@ -78,15 +63,17 @@ namespace gRPC.Client
 
 		private static async Task GetObjectsByFileTypeStreamAsync(FileWriterClient client)
 		{
-			using var es = client.GetObjectsByFileTypeStream(new GetObjectsByFileTypeRequest { FileType = "eventlog" });
+			using var response = client.GetObjectsByFileTypeStream(new GetObjectsByFileTypeRequest { FileType = "eventlog" });
 
 			Console.WriteLine("\nObjects by type eventlog\n");
-
-			await foreach (var response in es.ResponseStream.ReadAllAsync(CancellationToken.None))
+			
+			while (await response.ResponseStream.MoveNext())
 			{
-				Console.WriteLine(response.Data);
+				var content = response.ResponseStream.Current;
+				Console.WriteLine(content.Data);
 				await Task.Delay(1000);
 			}
+			
 		}
 
 		private static async Task GetAllFileTypesAsync(FileWriterClient client)
@@ -100,6 +87,27 @@ namespace gRPC.Client
 				Console.WriteLine(type);
 				await Task.Delay(1000);
 			}
+		}
+
+		private static FileWriterClient InitializeClient()
+		{
+			var defaultMethodConfig = new MethodConfig
+			{
+				Names = { MethodName.Default },
+				RetryPolicy = new RetryPolicy
+				{
+					MaxAttempts = 5,
+					InitialBackoff = TimeSpan.FromSeconds(1),
+					MaxBackoff = TimeSpan.FromSeconds(5),
+					BackoffMultiplier = 1.5,
+					RetryableStatusCodes = { StatusCode.Unavailable }
+				}
+			};
+			var channel = GrpcChannel.ForAddress(Settings.GrpcServerAddress, new GrpcChannelOptions
+			{
+				ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } }
+			});
+			return new FileWriterClient(channel);
 		}
 	}
 }
