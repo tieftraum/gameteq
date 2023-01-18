@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="Options\" />
 		<Folder Include="root\" />
 		<Folder Include="Services\" />
 	</ItemGroup>

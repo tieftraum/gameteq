@@ -1,16 +1,16 @@
-﻿using System.Text;
-using System.Text.Json.Serialization;
-using Google.Protobuf.WellKnownTypes;
+﻿using Google.Protobuf.WellKnownTypes;
+using gRPC.Server.Options;
 using Grpc.Core;
+using Microsoft.Extensions.Options;
 
 namespace gRPC.Server.Services
 {
 	public class FileService : FileWriter.FileWriterBase
 	{
-		private readonly IConfiguration _configuration;
-		public FileService(IConfiguration configuration)
+		private readonly ApplicationOptions _applicationOptions;
+		public FileService(IOptionsMonitor<ApplicationOptions> configuration)
 		{
-			_configuration = configuration;
+			_applicationOptions = configuration.CurrentValue;
 		}
 		public override async Task<WriteFileResponse> WriteFileInputInformation(IAsyncStreamReader<WriteFileRequest> requestStream, ServerCallContext context)
 		{
@@ -25,16 +25,15 @@ namespace gRPC.Server.Services
 
 				dataDict[fileInput.Type].Add(fileInput.Data);
 			}
-			
+
 			var writeTasks = new List<Task>();
 			
 			foreach (var group in dataDict.GroupBy(x => x.Key))
 			{
 				foreach (var (type, typeData) in group)
 				{
-					var folderToSave = $"{Directory.GetCurrentDirectory()}\\root\\{type}";
-
-					if (!Directory.Exists(folderToSave))
+					var folderToSave = $"{_applicationOptions.JsonFileStoragePath}\\{type}";
+;					if (!Directory.Exists(folderToSave))
 						Directory.CreateDirectory(folderToSave);
 
 					writeTasks.Add(File.AppendAllLinesAsync(folderToSave + $"\\{DateTime.Now:yy-MM-dd}", typeData));
@@ -43,25 +42,24 @@ namespace gRPC.Server.Services
 
 			await Task.WhenAll(writeTasks);
 
-			return new WriteFileResponse { Success = true };
+			return new WriteFileResponse { Success =  true };
 		}
 		public override Task<FileTypes> GetAllFileTypes(Empty request, ServerCallContext context)
 		{
 			var data = new FileTypes();
 
-			foreach (var directory in Directory.EnumerateDirectories($"{Directory.GetCurrentDirectory()}\\root"))
+			foreach (var directory in Directory.EnumerateDirectories(_applicationOptions.JsonFileStoragePath))
 			{
 				data.Types_.Add(Path.GetFileName(directory));
 			}
 
 			return Task.FromResult(data);
 		}
-
 		public override async Task GetObjectsByFileTypeStream(GetObjectsByFileTypeRequest request, 
 			IServerStreamWriter<GetObjectsByFileTypeResponse> responseStream, 
 			ServerCallContext context)
 		{
-			var directoryFullPath = $"{Directory.GetCurrentDirectory()}\\root\\{request.FileType}";
+			var directoryFullPath = $"{_applicationOptions.JsonFileStoragePath}\\{request.FileType}";
 
 			foreach (var fileFullPath in Directory.EnumerateFiles(directoryFullPath))
 			{
