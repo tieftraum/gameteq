@@ -3,9 +3,35 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{783FEAED-618D-43E9-AA2C-04199A79564F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gRPC.Server", "gRPC.Server\gRPC.Server.csproj", "{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{11FA21C1-2761-4626-96FF-89F542A3967D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "gRPC.Client", "gRPC.Client\gRPC.Client.csproj", "{7C8702E7-243B-4C2B-8852-D2688F66EB95}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C8702E7-243B-4C2B-8852-D2688F66EB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C8702E7-243B-4C2B-8852-D2688F66EB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C8702E7-243B-4C2B-8852-D2688F66EB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C8702E7-243B-4C2B-8852-D2688F66EB95}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EDB50A81-9D2D-49E7-8B45-B05FBCCBF900} = {783FEAED-618D-43E9-AA2C-04199A79564F}
+		{7C8702E7-243B-4C2B-8852-D2688F66EB95} = {11FA21C1-2761-4626-96FF-89F542A3967D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5C179DCD-6EF9-4CDB-BD79-94B4310D7799}
